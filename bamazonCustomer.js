@@ -99,7 +99,7 @@ function start() {
                           }
                         ],
                         function(error) {
-                          if (error) throw err;
+                          if (error) throw error;
                           console.log("Your purchase has been made! Thank you for shopping with Bamazon!");
                           connection.end();
                         }

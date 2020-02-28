@@ -45,13 +45,13 @@ function start() {
             for (i = 0; i < res.length; i++) {
                 if (answer.username === res[i].username && answer.password === res[i].password) {
                     permission = true;
-                } else {
-                    console.log("Your credentials don't match out database.")
-                    connection.end();
+                    break;
                 }
             };
-
-            if (permission === true) {
+            if (permission === false) {
+                console.log("Your input does not match out database credentials!");
+                connection.end();
+            } else if (permission === true) {
                 inquirer.prompt(
                     {
                         name: "initialize",
@@ -68,11 +68,13 @@ function start() {
                             connection.end();
                         } else if (answer.initialize === "Add inventory") {
                             addInventory();
-                        } else if (answer.initialize === "Add new product"){
+                        } else if (answer.initialize === "Add new product") {
                             newProduct();
+                        } else if (answer.initialize === "Add new manager") {
+                            newManager();
                         }
                         else {
-                            console.log(answer);
+                            console.log("You have exited Manager controls!");
                             connection.end();
                         }
                     })
@@ -81,18 +83,7 @@ function start() {
     });
 
 
-}
-
-// var passwordArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-// var password = [];
-
-// for (i = 0; i < 10; i++){
-//     var randomizer = Math.floor(Math.random() * passwordArray.length)
-//     password.push(passwordArray[randomizer])
-// };
-
-// console.log(password.join(""));
+};
 
 function viewProducts() {
     connection.query("SELECT * FROM products", function (err, res) {
@@ -113,16 +104,16 @@ function lowInventory() {
         if (err) throw err;
 
         for (i = 0; i < res.length; i++) {
-            if (res[i].quantity < 5) {
+            if (res[i].quantity < 10) {
                 console.log("*-----------*");
                 console.log("Product ID: " + res[i].item_id);
                 console.log("Product: " + res[i].product_name);
                 console.log("Price: $" + res[i].price);
                 console.log("Quantity: " + res[i].quantity);
-            }
+            };
         };
 
-    })
+    });
 };
 
 var choiceAdd = 0;
@@ -177,7 +168,7 @@ function addInventory() {
 
 };
 
-function newProduct(){
+function newProduct() {
     inquirer.prompt([
         {
             name: "name",
@@ -192,21 +183,51 @@ function newProduct(){
             type: "input",
             message: "Quantity of this product?"
         }
-    ]).then(function(answer){
+    ]).then(function (answer) {
         var productName = answer.name;
         var productPrice = parseInt(answer.price);
         var productQuantity = parseInt(answer.quantity);
 
         connection.query("INSERT INTO products SET ?",
-        {
-            product_name: productName,
-            price: productPrice,
-            quantity: productQuantity
-        }, function(err, res){
-            if (err) throw err;
+            {
+                product_name: productName,
+                price: productPrice,
+                quantity: productQuantity
+            }, function (err, res) {
+                if (err) throw err;
 
-            console.log(res.affectedRows + " product inserted!\n");
-            connection.end();
-        })
+                console.log(res.affectedRows + " product inserted!\n");
+                connection.end();
+            })
     });
 };
+
+function newManager() {
+    var passwordArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var passwordNew = [];
+
+    for (i = 0; i < 10; i++) {
+        var randomizer = Math.floor(Math.random() * passwordArray.length)
+        passwordNew.push(passwordArray[randomizer])
+    };
+
+    console.log(passwordNew.join(""));
+
+    inquirer.prompt({
+        name: "manager",
+        type: "input",
+        message: "New manager username?"
+    }).then(function (answer) {
+        connection.query("INSERT INTO managers SET ?", {
+            username: answer.manager,
+            password: passwordNew.join("")
+        }, function (err, res) {
+            if (err) throw err;
+
+            console.log(res.affectedRows + " manager(s) inserted!\n");
+            connection.end();
+
+        })
+    })
+}

@@ -1,5 +1,7 @@
 # bamazon
-Video Description Link: https://youtu.be/BGukvIUyQAo .
+Video Customer Description Link: https://youtu.be/BGukvIUyQAo .
+
+Video Manager Description Link: https://youtu.be/lzptlkQRPWk .
 
 This is a working online store app. Very simplistic backend mechanics.
 

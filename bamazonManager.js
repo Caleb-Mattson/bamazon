@@ -66,8 +66,10 @@ function start() {
                         } else if (answer.initialize === "View low inventory") {
                             lowInventory();
                             connection.end();
-                        } else if (answer.initialize === "Add inventory"){
+                        } else if (answer.initialize === "Add inventory") {
                             addInventory();
+                        } else if (answer.initialize === "Add new product"){
+                            newProduct();
                         }
                         else {
                             console.log(answer);
@@ -147,30 +149,64 @@ function addInventory() {
                 type: "input",
                 name: "add",
                 message: "How much would you like to add the inventory?"
-            }).then(function(answer){
+            }).then(function (answer) {
                 var newInventory = 0;
-                
-                for (i = 0; i < res.length; i++){
-                    if (res[i].item_id === choiceAdd){
+
+                for (i = 0; i < res.length; i++) {
+                    if (res[i].item_id === choiceAdd) {
                         newInventory = res[i].quantity + parseInt(answer.add);
                     }
                 }
                 connection.query("UPDATE products SET ? WHERE ?",
-            [{
-                quantity: newInventory
-            }, 
-            {
-                item_id: choiceAdd
-            }], function(err){
-                if (err) throw err;
+                    [{
+                        quantity: newInventory
+                    },
+                    {
+                        item_id: choiceAdd
+                    }], function (err) {
+                        if (err) throw err;
 
-                console.log("Product inventory has been added");
-                connection.end();
+                        console.log("Product inventory has been added");
+                        connection.end();
 
-            })
-            })
-            
-        })
+                    });
+            });
+
+        });
     });
 
-}
+};
+
+function newProduct(){
+    inquirer.prompt([
+        {
+            name: "name",
+            type: "input",
+            message: "What type of product would you like?"
+        }, {
+            name: "price",
+            type: "input",
+            message: "What price would you like to give this product?"
+        }, {
+            name: "quantity",
+            type: "input",
+            message: "Quantity of this product?"
+        }
+    ]).then(function(answer){
+        var productName = answer.name;
+        var productPrice = parseInt(answer.price);
+        var productQuantity = parseInt(answer.quantity);
+
+        connection.query("INSERT INTO products SET ?",
+        {
+            product_name: productName,
+            price: productPrice,
+            quantity: productQuantity
+        }, function(err, res){
+            if (err) throw err;
+
+            console.log(res.affectedRows + " product inserted!\n");
+            connection.end();
+        })
+    });
+};

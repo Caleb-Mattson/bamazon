@@ -49,7 +49,7 @@ function start() {
                 }
             };
             if (permission === false) {
-                console.log("Your input does not match out database credentials!");
+                console.log("Your input does not match our database credentials!");
                 connection.end();
             } else if (permission === true) {
                 inquirer.prompt(
@@ -72,8 +72,7 @@ function start() {
                             newProduct();
                         } else if (answer.initialize === "Add new manager") {
                             newManager();
-                        }
-                        else {
+                        } else {
                             console.log("You have exited Manager controls!");
                             connection.end();
                         }

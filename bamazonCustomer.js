@@ -59,10 +59,11 @@ function start() {
         ]).then(function (answer) {
             choice = answer.productChoice;
             // console.log(answer.quantity)
+            var pattern = /[a-z]+/g;
             var quantityRes = 0;
             for (var i = 0; i < res.length; i++) {
                 if (res[i].item_id === answer.productChoice) {
-                    quantityRes = parseInt(res[i].quantity - answer.productQuantity);
+                    quantityRes = res[i].quantity - parseInt(answer.productQuantity);
                 }
             };
 
